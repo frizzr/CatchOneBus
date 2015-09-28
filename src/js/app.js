@@ -6,6 +6,10 @@ var Vibe = require('ui/vibe');
 var Settings = require('settings');
 var KEY = require('key');
 
+var testData = { 'newYork': [40.748433, -73.985656], 'tampa': [28.0029, -82.4666], 'boston1': [42.3601, -71.0589], 'boston2': [42.348714, -71.083212] };
+var currentTestData = testData['newYork'];
+var testMode = false;
+
 // Create a nice waiting card for user while waiting
 var splashWindow = new UI.Card({
   title: 'CatchOneBus!',
@@ -13,30 +17,30 @@ var splashWindow = new UI.Card({
 });
 
 splashWindow.show();
+startApp(testMode);
 
-// Request location
-navigator.geolocation.getCurrentPosition(locationSuccess, locationError);
+function startApp(testModeOn = false) {
+    if (testModeOn) {
+        startAppWith(currentTestData[0], currentTestData[1]);
+    }
+    else {
+        // Request location
+        navigator.geolocation.getCurrentPosition(locationSuccess, locationError);
 
-function locationError(err) {
-  console.log('location error (' + err.code + '): ' + err.message);
+        function locationError(err) {
+          console.log('location error (' + err.code + '): ' + err.message);
+        }
+
+        // When location request succeeds
+        function locationSuccess(position) {
+          var latitude = position.coords.latitude;
+          var longitude = position.coords.longitude;
+          startAppWith(latitude, longitude);
+        }
+    }
 }
 
-// When location request succeeds
-function locationSuccess(position) {
-  var latitude = position.coords.latitude;
-  var longitude = position.coords.longitude;
-  // new york test
-  // latitude = 40.748433;
-  // longitude = -73.985656;
-  // tampa test
-  // latitude = 28.0029;
-  // longitude = -82.4666;
-  // console.log("boston test");
-  // latitude = 42.3601;
-  // longitude = -71.0589;
-  // console.log("boston test 2");
-  // latitude = 42.348714;
-  // longitude = -71.083212;
+function startAppWith(latitude, longitude) {
   var currentGeoRegion = geoRegion(latitude, longitude);
   // console.log("location is " + latitude + " " + longitude + " " + currentGeoRegion);
   var url = urlStopsForLocations(latitude, longitude);
